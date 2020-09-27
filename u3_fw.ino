@@ -261,7 +261,7 @@ void loop() {
 
 /*** sequences ***/
 
-SeqType welcome() {
+SeqType welcome1() {
     Eyes eyes;
 
     for (int i=0; i<=6; i++) {
@@ -277,8 +277,6 @@ SeqType welcome() {
 
     mp3.playFileByIndexNumber(5);
 
-step1:
-
     delay(500);
 
     eyes.showBlinkAnimation(mx);
@@ -287,40 +285,30 @@ step1:
 
     if (!isFlipSwitchOn()) {
         // the user has switched off - no fun
-        goto step2;
+        goto end;
     }
 
-    servo.write(SERVO_PUNCH);
-
-    waitFlipSwitchOff(700);
+    punchSwitch();
 
     eyes.setDirection(0, 0);
     eyes.show(mx);
 
-    servo.write(SERVO_HOME);
-
-    delay(1000);
-
     if (isFlipSwitchOn()) {
-
         /*
          * I tried to switch off but it doesn't work :-(
          * Is the user preventing me to switch off?
          * Is a mechanical problem?
-         * Try again...
          */
-
-        eyes.setDirection(0, -1);
-        eyes.show(mx);
-
-        goto step1;
+        return SEQ_TYPE_ANGRY;
     }
+
+    delay(800);
 
     eyes.showBlinkAnimation(mx, false, true);
 
     delay(1000);
 
-step2:
+end:
 
     for (int i=6; i>=0; i--) {
         eyes.setOpening(i);
@@ -333,11 +321,144 @@ step2:
     return SEQ_TYPE_SHUTDOWN;
 }
 
+void tictac() {
+    static bool tic;
+    tic = !tic;
+    if (tic)
+        servo.write(SERVO_HOME + 4);
+    else
+        servo.write(SERVO_HOME);
+}
+
+SeqType bumb() {
+
+    bool slow = isFlipSwitchOn();
+
+    BitFrame<16, 8> textFrame;
+
+    int max = 60 + 60 + 59;
+
+    tictac();
+    delay(100);
+
+    for (int i=0; i<=max; i++) {
+        int value = max - i;
+
+        show3DigitTime(value, mx);
+
+        if (isFlipSwitchOn() == slow) {
+            delay(900);
+            tictac();
+            delay(100);
+        } else {
+            delay(30);
+            if ((i % 4) == 0)
+                tictac();
+        }
+    }
+
+    showExplosionAnimation(mx);
+
+    if (isFlipSwitchOn())
+        punchSwitch();
+
+    delay(500);
+
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_ANGRY;
+
+    return SEQ_TYPE_SHUTDOWN;
+}
+
+SeqType fablabAd() {
+    showScrollingText("Y-FABLAB.CH", mx);
+    delay(100);
+    return SEQ_TYPE_SHUTDOWN;
+}
+
+SeqType grrr() {
+    showScrollingText("GRRRR...", mx);
+    delay(100);
+    if (isFlipSwitchOn()) {
+        punchSwitch();
+        delay(100);
+        if (isFlipSwitchOn())
+            return SEQ_TYPE_ANGRY;
+    } else {
+        return SEQ_TYPE_DELIRIUM;
+    }
+}
+
+void test9() {
+  //pinMode(GPIO_SHUTDOWN, OUTPUT);
+  // digitalWrite(GPIO_SHUTDOWN, LOW);
+
+  BitFrame<4, 4> z4({
+    0b11110000,
+    0b00100000,
+    0b01000000,
+    0b11110000,
+  });
+  BitFrame<5, 5> z5({
+    0b11111000,
+    0b00010000,
+    0b00100000,
+    0b01000000,
+    0b11111000,
+  });
+  BitFrame<5, 6> z6({
+    0b11111000,
+    0b00010000,
+    0b00100000,
+    0b01000000,
+    0b10000000,
+    0b11111000,
+  });
+
+  BitFrame<16, 8> screen;
+  screen.paint(0, 1, z6);
+  screen.paint(6, 2, z5);
+  screen.paint(12, 3, z4);
+
+  mx.show(screen);
+
+  for (int i = 0; i <= 1000; i++) {
+    float t = 0.001f * i;
+    float pos = SERVO_HOME + (SERVO_OPEN_10MM - SERVO_HOME) * t;
+    servo.write(pos);
+    delay(5);
+  }
+
+  delay(1000);
+
+  for (int i = 0; i <= 1000; i++) {
+    float t = 0.001f * (1000 - i);
+    float pos = SERVO_HOME + (SERVO_OPEN_10MM - SERVO_HOME) * t;
+    servo.write(pos);
+    delay(5);
+  }
+
+  delay(1000);
+
+  if (isFlipSwitchOn()) {
+    punchSwitch();
+  } else {
+    servo.write(SERVO_HOME);
+    delay(500);
+  }
+
+  delay(500);
+  shutDown();
+}
+
 
 /*** sequence list ***/
 
 Seq seqList[] = {
-    { SEQ_TYPE_WELCOME, welcome, 100 },
+    { SEQ_TYPE_WELCOME, welcome1, 100 },
+    { SEQ_TYPE_ANGRY, grrr, 100 },
+    { SEQ_TYPE_DELIRIUM, bumb, 100 },
+    { SEQ_TYPE_DELIRIUM, fablabAd, 10 },
 };
 
 int seqCount = sizeof(seqList) / sizeof(*seqList);
