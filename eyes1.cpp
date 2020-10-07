@@ -10,7 +10,123 @@
 #include <cstdbool>
 
 
+static uint8_t astonishData[8] = {
+    0b00111100,
+    0b01111110,
+    0b01100110,
+    0b01100110,
+    0b01100110,
+    0b01100110,
+    0b01111110,
+    0b00111100,
+};
+
+static uint8_t angryLeftData[8] = {
+    0b00000000,
+    0b00111000,
+    0b01111100,
+    0b01100110,
+    0b01100110,
+    0b01111110,
+    0b00111100,
+    0b00000000,
+};
+
+static uint8_t angryRightData[8] = {
+    0b00000000,
+    0b00011100,
+    0b00111110,
+    0b01100110,
+    0b01100110,
+    0b01111110,
+    0b00111100,
+    0b00000000,
+};
+
+static uint8_t cryData[8] = {
+    0b00000000,
+    0b00011000,
+    0b00111100,
+    0b01111110,
+    0b01100110,
+    0b01100110,
+    0b00111100,
+    0b00000000,
+};
+
+static uint8_t sadLevel1Data[8] = {
+    0b00000000,
+    0b00111100,
+    0b01111110,
+    0b01111110,
+    0b01100110,
+    0b01100110,
+    0b01111110,
+    0b00000000,
+};
+
+static uint8_t sadLevel2Data[8] = {
+    0b00000000,
+    0b00000000,
+    0b00111100,
+    0b01111110,
+    0b01100110,
+    0b01100110,
+    0b01111110,
+    0b00000000,
+};
+
+static uint8_t happyData[8] = {
+    0b00011000,
+    0b00111100,
+    0b01111110,
+    0b01100110,
+    0b01100110,
+    0b01111110,
+    0b00111100,
+    0b00000000,
+};
+
+static uint8_t squashData[8] = {
+    0b00000000,
+    0b00000000,
+    0b00011000,
+    0b01111110,
+    0b01111110,
+    0b00011000,
+    0b00000000,
+    0b00000000,
+};
+
 void Eye::render() {
+
+    switch (expression) {
+        case EyeExpressionAstonish:
+            memcpy(data, astonishData, sizeof(data));
+            return;
+        case EyeExpressionAngry:
+            if (right)
+                memcpy(data, angryRightData, sizeof(data));
+            else
+                memcpy(data, angryLeftData, sizeof(data));
+            return;
+        case EyeExpressionCry:
+            memcpy(data, cryData, sizeof(data));
+            return;
+        case EyeExpressionSadLevel1:
+            memcpy(data, sadLevel1Data, sizeof(data));
+            return;
+        case EyeExpressionSadLevel2:
+        case EyeExpressionTired:
+            memcpy(data, sadLevel2Data, sizeof(data));
+            return;
+        case EyeExpressionHappy:
+            memcpy(data, happyData, sizeof(data));
+            return;
+        case EyeExpressionSqueeze:
+            memcpy(data, squashData, sizeof(data));
+            return;
+    }
 
     // compute centra part, rows 2, 3, 4 and 5
 
