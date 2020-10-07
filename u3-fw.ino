@@ -472,9 +472,12 @@ SeqType astonish1() {
 SeqType astonish2() {
     Eyes eyes;
 
+    eyes.setExpression(EyeExpressionNeutral);
+    eyes.show(mx);
+    delay(500);
     eyes.setExpression(EyeExpressionAstonish);
     eyes.show(mx);
-    delay(800);
+    delay(500);
     showQuestionMarks(mx);
     delay(150);
     eyes.show(mx);
@@ -484,6 +487,9 @@ SeqType astonish2() {
     eyes.show(mx);
 
     delay(500);
+
+    eyes.setExpression(EyeExpressionNeutral);
+    eyes.show(mx);
 
     for (int i = 0; i < 10; i++) {
         delay(100);
