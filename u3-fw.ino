@@ -26,9 +26,12 @@
 
 enum SeqType {
     SEQ_TYPE_SHUTDOWN,
-    SEQ_TYPE_WELCOME,
-    SEQ_TYPE_ANGRY,
-    SEQ_TYPE_DELIRIUM,
+    SEQ_TYPE_WELCOME,   // lors de l'enclanchement
+    SEQ_TYPE_BYE,       // lorsque le punch réussit
+    SEQ_TYPE_DECEPTION, // lorsqu'on éteint avant le punch
+    SEQ_TYPE_ASTONISH,  // lorsqu'on réallume après un DECEPTION
+    SEQ_TYPE_ANGRY,     // lorsqu'on empêche le punch de switcher off
+    SEQ_TYPE_DELIRIUM,  // lorsqu'on est en ANGRY et qu'on éteint la boîte
     SEQ_TYPE_MAX
 };
 
@@ -272,43 +275,35 @@ SeqType welcome1() {
 
     mp3Init(); // this takes 1250ms
 
-    eyes.setDirection(0, -1);
-    eyes.show(mx);
-
-    mp3.playFileByIndexNumber(5);
+    eyes.showBlinkAnimation(mx);
 
     delay(500);
 
-    eyes.showBlinkAnimation(mx);
-
-    delay(1000);
-
-    if (!isFlipSwitchOn()) {
-        // the user has switched off - no fun
-        goto end;
+    for (int i = 0; i< 10; i++) {
+        delay(100);
+        if (!isFlipSwitchOn())
+            return SEQ_TYPE_DECEPTION;
     }
 
     punchSwitch();
 
-    eyes.setDirection(0, 0);
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_ANGRY;
+
+    return SEQ_TYPE_BYE;
+}
+
+SeqType bye1() {
+    Eyes eyes;
+
+    eyes.setExpression(EyeExpressionNeutral);
     eyes.show(mx);
 
-    if (isFlipSwitchOn()) {
-        /*
-         * I tried to switch off but it doesn't work :-(
-         * Is the user preventing me to switch off?
-         * Is a mechanical problem?
-         */
-        return SEQ_TYPE_ANGRY;
-    }
-
-    delay(800);
+    delay(500);
 
     eyes.showBlinkAnimation(mx, false, true);
 
     delay(1000);
-
-end:
 
     for (int i=6; i>=0; i--) {
         eyes.setOpening(i);
@@ -316,9 +311,226 @@ end:
         delay(50);
     }
 
-    delay(1000);
+    delay(100);
 
     return SEQ_TYPE_SHUTDOWN;
+}
+
+SeqType deception1() {
+    Eyes eyes;
+
+    eyes.setExpression(EyeExpressionCry);
+    eyes.show(mx);
+    delay(800);
+    eyes.setBit(15, 6, true);
+    mx.show(eyes);
+    delay(150);
+    eyes.setBit(15, 7, true);
+    mx.show(eyes);
+    delay(150);
+    eyes.setBit(15, 6, false);
+    mx.show(eyes);
+    delay(150);
+    eyes.setBit(15, 7, false);
+    mx.show(eyes);
+
+    for (int i = 0; i< 20; i++) {
+        delay(100);
+        if (isFlipSwitchOn())
+            return SEQ_TYPE_ASTONISH;
+    }
+
+    eyes.setExpression(EyeExpressionNeutral);
+    eyes.show(mx);
+
+    delay(500);
+
+    for (int i=6; i>=0; i--) {
+        eyes.setOpening(i);
+        eyes.show(mx);
+        delay(50);
+    }
+
+    delay(100);
+
+    return SEQ_TYPE_SHUTDOWN;
+}
+
+SeqType deception2() {
+    BitFrame<4, 4> z4({
+        0b11110000,
+        0b00100000,
+        0b01000000,
+        0b11110000,
+    });
+    BitFrame<5, 5> z5({
+        0b11111000,
+        0b00010000,
+        0b00100000,
+        0b01000000,
+        0b11111000,
+    });
+    BitFrame<5, 6> z6({
+        0b11111000,
+        0b00010000,
+        0b00100000,
+        0b01000000,
+        0b10000000,
+        0b11111000,
+    });
+
+    BitFrame<16, 8> screen;
+    screen.paint(0, 1, z6);
+    screen.paint(6, 2, z5);
+    screen.paint(12, 3, z4);
+
+    mx.show(screen);
+
+    for (int j = 0; j < 3; j++) {
+        for (int i = 0; i <= 1000; i++) {
+            float t = 0.001f * i;
+            float pos = SERVO_HOME + (SERVO_OPEN_10MM - SERVO_HOME) * t;
+            servo.write(pos);
+            delay(5);
+            if (isFlipSwitchOn()) {
+                servo.write(SERVO_HOME);
+                return SEQ_TYPE_ASTONISH;
+            }
+        }
+
+        for (int i = 0; i< 10; i++) {
+            delay(100);
+            if (isFlipSwitchOn()) {
+                servo.write(SERVO_HOME);
+                return SEQ_TYPE_ASTONISH;
+            }
+        }
+
+        for (int i = 0; i <= 1000; i++) {
+            float t = 0.001f * (1000 - i);
+            float pos = SERVO_HOME + (SERVO_OPEN_10MM - SERVO_HOME) * t;
+            servo.write(pos);
+            delay(5);
+            if (isFlipSwitchOn()) {
+                servo.write(SERVO_HOME);
+                return SEQ_TYPE_ASTONISH;
+            }
+        }
+
+        for (int i = 0; i< 10; i++) {
+            delay(100);
+            if (isFlipSwitchOn()) {
+                servo.write(SERVO_HOME);
+                return SEQ_TYPE_ASTONISH;
+            }
+        }
+    }
+
+    servo.write(SERVO_HOME);
+
+    delay(500);
+
+    return SEQ_TYPE_SHUTDOWN;
+}
+
+SeqType astonish1() {
+    Eyes eyes;
+
+    eyes.setExpression(EyeExpressionHappy);
+    eyes.show(mx);
+    delay(800);
+    showHearts(false, mx);
+    delay(200);
+    showHearts(true, mx);
+    delay(200);
+    showHearts(false, mx);
+    delay(200);
+    showHearts(true, mx);
+    delay(200);
+    showHearts(false, mx);
+    delay(200);
+    showHearts(true, mx);
+    delay(200);
+    eyes.show(mx);
+
+    delay(500);
+
+    for (int i = 0; i < 10; i++) {
+        delay(100);
+        if (!isFlipSwitchOn())
+            return SEQ_TYPE_DECEPTION;
+    }
+
+    punchSwitch();
+
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_ANGRY;
+
+    return SEQ_TYPE_BYE;
+}
+
+SeqType astonish2() {
+    Eyes eyes;
+
+    eyes.setExpression(EyeExpressionAstonish);
+    eyes.show(mx);
+    delay(800);
+    showQuestionMarks(mx);
+    delay(150);
+    eyes.show(mx);
+    delay(100);
+    showQuestionMarks(mx);
+    delay(150);
+    eyes.show(mx);
+
+    delay(500);
+
+    for (int i = 0; i < 10; i++) {
+        delay(100);
+        if (!isFlipSwitchOn())
+            return SEQ_TYPE_DECEPTION;
+    }
+
+    punchSwitch();
+
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_ANGRY;
+
+    return SEQ_TYPE_BYE;
+}
+
+/**
+ * Séquence de type ANGRY qui affiche yeux fachés et élairs.
+ */
+SeqType angryWithThunders() {
+    Eyes eyes;
+
+    eyes.setExpression(EyeExpressionAngry);
+    eyes.show(mx);
+    delay(800);
+    int normalIntentity = mx.getIntensity();
+    showThunders(mx);
+    delay(100);
+    mx.setIntensity(15);
+    delay(100);
+    mx.setIntensity(normalIntentity);
+    delay(100);
+    mx.setIntensity(15);
+    delay(100);
+    mx.setIntensity(normalIntentity);
+    delay(100);
+    eyes.show(mx);
+    delay(2000);
+    if (isFlipSwitchOn()) {
+        punchSwitch();
+        delay(100);
+        if (isFlipSwitchOn())
+            return SEQ_TYPE_ANGRY;
+        else
+            return SEQ_TYPE_BYE;
+    } else {
+        return SEQ_TYPE_DELIRIUM;
+    }
 }
 
 void tictac() {
@@ -330,7 +542,7 @@ void tictac() {
         servo.write(SERVO_HOME);
 }
 
-SeqType bumb() {
+SeqType deliriumWithBumb() {
 
     bool slow = isFlipSwitchOn();
 
@@ -370,85 +582,10 @@ SeqType bumb() {
     return SEQ_TYPE_SHUTDOWN;
 }
 
-SeqType fablabAd() {
+SeqType deliriumShowingFablabAd() {
     showScrollingText("Y-FABLAB.CH", mx);
     delay(100);
     return SEQ_TYPE_SHUTDOWN;
-}
-
-SeqType grrr() {
-    showScrollingText("GRRRR...", mx);
-    delay(100);
-    if (isFlipSwitchOn()) {
-        punchSwitch();
-        delay(100);
-        if (isFlipSwitchOn())
-            return SEQ_TYPE_ANGRY;
-    } else {
-        return SEQ_TYPE_DELIRIUM;
-    }
-}
-
-void test9() {
-  //pinMode(GPIO_SHUTDOWN, OUTPUT);
-  // digitalWrite(GPIO_SHUTDOWN, LOW);
-
-  BitFrame<4, 4> z4({
-    0b11110000,
-    0b00100000,
-    0b01000000,
-    0b11110000,
-  });
-  BitFrame<5, 5> z5({
-    0b11111000,
-    0b00010000,
-    0b00100000,
-    0b01000000,
-    0b11111000,
-  });
-  BitFrame<5, 6> z6({
-    0b11111000,
-    0b00010000,
-    0b00100000,
-    0b01000000,
-    0b10000000,
-    0b11111000,
-  });
-
-  BitFrame<16, 8> screen;
-  screen.paint(0, 1, z6);
-  screen.paint(6, 2, z5);
-  screen.paint(12, 3, z4);
-
-  mx.show(screen);
-
-  for (int i = 0; i <= 1000; i++) {
-    float t = 0.001f * i;
-    float pos = SERVO_HOME + (SERVO_OPEN_10MM - SERVO_HOME) * t;
-    servo.write(pos);
-    delay(5);
-  }
-
-  delay(1000);
-
-  for (int i = 0; i <= 1000; i++) {
-    float t = 0.001f * (1000 - i);
-    float pos = SERVO_HOME + (SERVO_OPEN_10MM - SERVO_HOME) * t;
-    servo.write(pos);
-    delay(5);
-  }
-
-  delay(1000);
-
-  if (isFlipSwitchOn()) {
-    punchSwitch();
-  } else {
-    servo.write(SERVO_HOME);
-    delay(500);
-  }
-
-  delay(500);
-  shutDown();
 }
 
 
@@ -456,9 +593,14 @@ void test9() {
 
 Seq seqList[] = {
     { SEQ_TYPE_WELCOME, welcome1, 100 },
-    { SEQ_TYPE_ANGRY, grrr, 100 },
-    { SEQ_TYPE_DELIRIUM, bumb, 100 },
-    { SEQ_TYPE_DELIRIUM, fablabAd, 10 },
+    { SEQ_TYPE_BYE, bye1, 100 },
+    { SEQ_TYPE_DECEPTION, deception1, 100 },
+    { SEQ_TYPE_DECEPTION, deception2, 100 },
+    { SEQ_TYPE_ASTONISH, astonish1, 100 },
+    { SEQ_TYPE_ASTONISH, astonish2, 100 },
+    { SEQ_TYPE_ANGRY, angryWithThunders, 100 },
+    { SEQ_TYPE_DELIRIUM, deliriumWithBumb, 100 },
+    { SEQ_TYPE_DELIRIUM, deliriumShowingFablabAd, 10 },
 };
 
 int seqCount = sizeof(seqList) / sizeof(*seqList);

@@ -14,3 +14,6 @@
 void showExplosionAnimation(MX& mx);
 void show3DigitTime(int t, MX& mx);
 void showScrollingText(std::string str, MX& mx);
+void showQuestionMarks(MX& mx);
+void showThunders(MX& mx);
+void showHearts(bool full, MX& mx);
