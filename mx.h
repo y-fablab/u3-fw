@@ -17,12 +17,15 @@
 class MX {
 private:
     SPISettings spiSettings;
+    int intensity = 3;
 
 public:
     MX() : spiSettings(1000000, MSBFIRST, SPI_MODE0) {}
     void init();
     void writeCmd(uint16_t data);
     void writeRow(int row, uint16_t pattern);
+    void setIntensity(int intensity);
+    int getIntensity() { return intensity; }
     void show(const BitFrame<16, 8>& frame);
     void clear();
 };

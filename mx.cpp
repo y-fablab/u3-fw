@@ -19,7 +19,7 @@ void MX::init(void) {
     SPI.begin();
     writeCmd(0x0c00);
     writeCmd(0x0900);
-    writeCmd(0x0a03); // intensity
+    writeCmd(0x0a00 | intensity);
     writeCmd(0x0b07);
     clear();
     writeCmd(0x0c01);
@@ -47,6 +47,14 @@ void MX::writeRow(int row, uint16_t pattern) {
     SPI.transfer16(addr | right);
     digitalWrite(SPI_CS, HIGH);
     SPI.endTransaction();
+}
+
+void MX::setIntensity(int intensity) {
+    if (intensity < 0)
+        intensity = 0;
+    if (intensity > 15)
+        intensity = 15;  
+    writeCmd(0x0a00 | intensity);
 }
 
 void MX::show(const BitFrame<16, 8>& frame) {
