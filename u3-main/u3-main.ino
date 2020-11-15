@@ -384,36 +384,13 @@ SeqType welcome3() {
         delay(200);
     }
 
-    delay(600);
+    mp3Init(); // this takes 1250ms
 
     for (int i=0; i<=4; i++) {
         screen.paint(0, 1 + i, eye);
         screen.paint(0, 6, bottom);
         mx.show(screen);
         delay(150);
-    }
-    screen.clear();
-    mx.show(screen);
-
-    if (!isFlipSwitchOn())
-        return SEQ_TYPE_SHUTDOWN;
-
-    mp3Init(); // this takes 1250ms
-
-    for (int i=0; i<=4; i++) {
-        screen.paint(8, 5 - i, eye);
-        screen.paint(8, 6, bottom);
-        mx.show(screen);
-        delay(150);
-    }
-
-    delay(600);
-
-    for (int i=0; i<=4; i++) {
-        screen.paint(8, 1 + i, eye);
-        screen.paint(8, 6, bottom);
-        mx.show(screen);
-        delay(100);
     }
     screen.clear();
     mx.show(screen);
