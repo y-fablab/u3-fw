@@ -21,6 +21,15 @@
 #define SERVO_OPEN_10MM  50
 #define SERVO_PUNCH      150
 
+#define SOUND_ANGRY1      1
+#define SOUND_ANGRY2      2
+#define SOUND_ASTONISH1   3
+#define SOUND_ASTONISH2   4
+#define SOUND_DECEPTION1  5
+#define SOUND_EXPLOSION1  6
+#define SOUND_WELCOME1    7
+#define SOUND_WELCOME2    8
+
 
 /*** types ***/
 
@@ -780,6 +789,7 @@ SeqType deliriumWithBumb() {
         }
     }
 
+    mp3FastPlay(SOUND_EXPLOSION1);
     showExplosionAnimation(mx);
 
     if (isFlipSwitchOn())
