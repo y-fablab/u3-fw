@@ -317,12 +317,10 @@ SeqType welcome2() {
 
     mp3Init(); // this takes 1250ms
 
-    eyes.showBlinkAnimation(mx);
-    eyes.showBlinkAnimation(mx);
-
-    delay(50);
     mp3FastPlay(SOUND_R2D2_WELCOME2);
-    delay(900);
+    eyes.showBlinkAnimation(mx);
+    eyes.showBlinkAnimation(mx);
+    delay(1000);
 
     if (!isFlipSwitchOn())
         return SEQ_TYPE_DECEPTION;
