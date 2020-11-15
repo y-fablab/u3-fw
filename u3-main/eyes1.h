@@ -77,7 +77,7 @@ public:
         opening = max(0, min(6, op));
     }
     void setExpression(EyeExpression expr) {
-        expression = expr;    
+        expression = expr;
     }
     void setRight(bool right) {
         this->right = right;

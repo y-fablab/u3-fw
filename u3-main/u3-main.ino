@@ -288,7 +288,7 @@ SeqType welcome1() {
     mp3Init(); // this takes 1250ms
 
     eyes.showBlinkAnimation(mx);
-    delay(250);    
+    delay(250);
     mp3FastPlay(SOUND_R2D2_WELCOME1);
     delay(250);
 
@@ -376,7 +376,7 @@ SeqType welcome3() {
     bottom.setBit(4, 0, true);
     bottom.setBit(5, 0, true);
     bottom.setBit(6, 0, true);
-    
+
     BitFrame<16, 8> screen;
 
     for (int i=0; i<=4; i++) {
@@ -399,7 +399,7 @@ SeqType welcome3() {
 
     if (!isFlipSwitchOn())
         return SEQ_TYPE_SHUTDOWN;
-    
+
     mp3Init(); // this takes 1250ms
 
     for (int i=0; i<=4; i++) {
@@ -424,7 +424,7 @@ SeqType welcome3() {
         return SEQ_TYPE_SHUTDOWN;
 
     mp3FastPlay(SOUND_R2D2_WAKE_UP);
-    
+
     delay(1000);
 
     Eyes eyes;
@@ -501,7 +501,7 @@ SeqType bye2() {
 
     eyes.showBlinkAnimation(mx);
     eyes.showBlinkAnimation(mx);
-    
+
     delay(200);
 
     for (int i=0; i<=8; i++) {
@@ -742,7 +742,7 @@ SeqType angryWithThunders() {
     Eyes eyes;
 
     mp3FastPlay(SOUND_R2D2_ANGRY1);
-    
+
     eyes.setExpression(EyeExpressionAngry);
     eyes.show(mx);
     delay(800);
