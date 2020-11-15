@@ -293,15 +293,206 @@ SeqType welcome1() {
     return SEQ_TYPE_BYE;
 }
 
+SeqType welcome2() {
+    Eyes eyes;
+
+    for (int i=0; i<=6; i++) {
+        eyes.setOpening(i);
+        eyes.show(mx);
+        delay(50);
+    }
+
+    mp3Init(); // this takes 1250ms
+
+    eyes.showBlinkAnimation(mx);
+    eyes.showBlinkAnimation(mx);
+
+    delay(1000);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
+    eyes.setDirection(2); // toward right
+    eyes.show(mx);
+    delay(1000);
+    for (int i=0; i<=4; i++) {
+        eyes.setDirection((10 - i) % 8);
+        eyes.show(mx);
+        delay(100);
+    }
+    delay(200);
+    eyes.showBlinkAnimation(mx);
+    delay(500);
+    for (int i=0; i<=4; i++) {
+        eyes.setDirection((6 + i) % 8);
+        eyes.show(mx);
+        delay(100);
+    }
+    delay(1000);
+    for (int i=0; i<=3; i++) {
+        if (i == 1)
+          eyes.left.setDirection(1);
+        eyes.right.setDirection((10 - i) % 8);
+        eyes.show(mx);
+        delay(100);
+    }
+    delay(1000);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
+    punchSwitch();
+
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_ANGRY;
+
+    return SEQ_TYPE_BYE;
+}
+
+SeqType welcome3() {
+    Eye eye;
+    eye.setOpening(6);
+    eye.setExpression(EyeExpressionNeutral);
+    eye.render();
+    BitFrame<8, 2> bottom;
+    bottom.setBit(1, 0, true);
+    bottom.setBit(2, 0, true);
+    bottom.setBit(3, 0, true);
+    bottom.setBit(4, 0, true);
+    bottom.setBit(5, 0, true);
+    bottom.setBit(6, 0, true);
+    
+    BitFrame<16, 8> screen;
+
+    for (int i=0; i<=4; i++) {
+        screen.paint(0, 5 - i, eye);
+        screen.paint(0, 6, bottom);
+        mx.show(screen);
+        delay(200);
+    }
+
+    delay(600);
+
+    for (int i=0; i<=4; i++) {
+        screen.paint(0, 1 + i, eye);
+        screen.paint(0, 6, bottom);
+        mx.show(screen);
+        delay(150);
+    }
+    screen.clear();
+    mx.show(screen);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_SHUTDOWN;
+    
+    mp3Init(); // this takes 1250ms
+
+    for (int i=0; i<=4; i++) {
+        screen.paint(8, 5 - i, eye);
+        screen.paint(8, 6, bottom);
+        mx.show(screen);
+        delay(150);
+    }
+
+    delay(600);
+
+    for (int i=0; i<=4; i++) {
+        screen.paint(8, 1 + i, eye);
+        screen.paint(8, 6, bottom);
+        mx.show(screen);
+        delay(100);
+    }
+    screen.clear();
+    mx.show(screen);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_SHUTDOWN;
+
+    delay(1000);
+
+    Eyes eyes;
+
+    for (int i=0; i<=7; i++) {
+        eyes.left.setOpening(i);
+        eyes.right.setOpening(i - 1);
+        eyes.show(mx);
+        delay(100);
+    }
+
+    delay(1000);
+
+    eyes.setDirection(0); // toward up
+    eyes.show(mx);
+
+    delay(1000);
+
+    uint8_t profile[] = { 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 5, 4, 3, 2, 2, 2, 2, 3, 4, 5, 5, 5, 4, 3, 3, 3, 4, 4, 4, 4, 4 };
+    for (int i=0; i<sizeof(profile) - 4; i++) {
+        eyes.left.setDirection(profile[i]);
+        eyes.right.setDirection((8 - profile[i + 4]) % 8);
+        eyes.show(mx);
+        delay(80);
+    }
+
+    delay(1000);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
+    punchSwitch();
+
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_ANGRY;
+
+    return SEQ_TYPE_BYE;
+}
+
 SeqType bye1() {
     Eyes eyes;
 
     eyes.setExpression(EyeExpressionNeutral);
+    eyes.setDirection(-1);
     eyes.show(mx);
 
     delay(500);
 
     eyes.showBlinkAnimation(mx, false, true);
+
+    delay(1000);
+
+    for (int i=6; i>=0; i--) {
+        eyes.setOpening(i);
+        eyes.show(mx);
+        delay(50);
+    }
+
+    delay(100);
+
+    return SEQ_TYPE_SHUTDOWN;
+}
+
+SeqType bye2() {
+    Eyes eyes;
+
+    eyes.setExpression(EyeExpressionNeutral);
+    eyes.setDirection(-1);
+    eyes.show(mx);
+
+    delay(500);
+
+    eyes.showBlinkAnimation(mx);
+    eyes.showBlinkAnimation(mx);
+    
+    delay(200);
+
+    for (int i=0; i<=8; i++) {
+        eyes.left.setDirection(i % 8);
+        eyes.right.setDirection((i + 4) % 8);
+        eyes.show(mx);
+        delay(100);
+    }
+    eyes.setDirection(-1);
+    eyes.show(mx);
 
     delay(1000);
 
@@ -613,7 +804,10 @@ SeqType deliriumShowingFablabAd() {
 
 Seq seqList[] = {
     { SEQ_TYPE_WELCOME, welcome1, 100 },
+    { SEQ_TYPE_WELCOME, welcome2, 100 },
+    { SEQ_TYPE_WELCOME, welcome3, 100 },
     { SEQ_TYPE_BYE, bye1, 100 },
+    { SEQ_TYPE_BYE, bye2, 100 },
     { SEQ_TYPE_DECEPTION, deception1, 100 },
     { SEQ_TYPE_DECEPTION, deception2, 100 },
     { SEQ_TYPE_ASTONISH, astonish1, 100 },

@@ -36,12 +36,42 @@ private:
     int dirY = 0;    // direction du regard en X, de -1 à 1
     EyeExpression expression = EyeExpressionNeutral;
     bool right = false;
-    void render();
 
 public:
     void setDirection(int x, int y) {
         dirX = max(-1, min(1, x));
         dirY = max(-1, min(1, y));
+    }
+    void setDirection(int dir) {
+        switch (dir) {
+        default:
+            setDirection(0, 0);
+            break;
+        case 0:
+            setDirection(0, -1);
+            break;
+        case 1:
+            setDirection(1, -1);
+            break;
+        case 2:
+            setDirection(1, 0);
+            break;
+        case 3:
+            setDirection(1, 1);
+            break;
+        case 4:
+            setDirection(0, 1);
+            break;
+        case 5:
+            setDirection(-1, 1);
+            break;
+        case 6:
+            setDirection(-1, 0);
+            break;
+        case 7:
+            setDirection(-1, -1);
+            break;
+        }
     }
     void setOpening(int op) {
         opening = max(0, min(6, op));
@@ -52,6 +82,7 @@ public:
     void setRight(bool right) {
         this->right = right;
     }
+    void render();
 };
 
 class Eyes : public BitFrame<16, 8> {
@@ -75,6 +106,10 @@ public:
     void setDirection(int x, int y) {
         left.setDirection(x, y);
         right.setDirection(x, y);
+    }
+    void setDirection(int dir) {
+        left.setDirection(dir);
+        right.setDirection(dir);
     }
     void setOpening(int op) {
         left.setOpening(op);
