@@ -384,6 +384,9 @@ SeqType deception2() {
     screen.paint(6, 2, z5);
     screen.paint(12, 3, z4);
 
+    int normalIntentity = mx.getIntensity();
+    mx.setIntensity(1);
+
     mx.show(screen);
 
     for (int j = 0; j < 3; j++) {
@@ -394,6 +397,8 @@ SeqType deception2() {
             delay(5);
             if (isFlipSwitchOn()) {
                 servo.write(SERVO_HOME);
+                mx.clear();
+                mx.setIntensity(normalIntentity);
                 return SEQ_TYPE_ASTONISH;
             }
         }
@@ -402,6 +407,8 @@ SeqType deception2() {
             delay(100);
             if (isFlipSwitchOn()) {
                 servo.write(SERVO_HOME);
+                mx.clear();
+                mx.setIntensity(normalIntentity);
                 return SEQ_TYPE_ASTONISH;
             }
         }
@@ -413,6 +420,8 @@ SeqType deception2() {
             delay(5);
             if (isFlipSwitchOn()) {
                 servo.write(SERVO_HOME);
+                mx.clear();
+                mx.setIntensity(normalIntentity);
                 return SEQ_TYPE_ASTONISH;
             }
         }
@@ -421,6 +430,8 @@ SeqType deception2() {
             delay(100);
             if (isFlipSwitchOn()) {
                 servo.write(SERVO_HOME);
+                mx.clear();
+                mx.setIntensity(normalIntentity);
                 return SEQ_TYPE_ASTONISH;
             }
         }
@@ -429,6 +440,9 @@ SeqType deception2() {
     servo.write(SERVO_HOME);
 
     delay(500);
+
+    mx.clear();
+    mx.setIntensity(normalIntentity);
 
     return SEQ_TYPE_SHUTDOWN;
 }
