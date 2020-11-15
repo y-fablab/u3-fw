@@ -21,14 +21,17 @@
 #define SERVO_OPEN_10MM  50
 #define SERVO_PUNCH      150
 
-#define SOUND_ANGRY1      1
-#define SOUND_ANGRY2      2 // pas utilisé
-#define SOUND_ASTONISH1   3
-#define SOUND_ASTONISH2   4
-#define SOUND_DECEPTION1  5
-#define SOUND_EXPLOSION1  6
-#define SOUND_WELCOME1    7
-#define SOUND_WELCOME2    8
+#define SOUND_R2D2_ANGRY1      1
+#define SOUND_R2D2_ANGRY2      2 // pas utilisé
+#define SOUND_R2D2_ASTONISH1   3
+#define SOUND_R2D2_ASTONISH2   4
+#define SOUND_R2D2_DECEPTION1  5
+#define SOUND_EXPLOSION1       6
+#define SOUND_R2D2_WELCOME1    7
+#define SOUND_R2D2_WELCOME2    8
+#define SOUND_R2D2_BROKEN      9
+#define SOUND_R2D2_WAKE_UP     10
+#define SOUND_MARIO_END        11
 
 
 /*** types ***/
@@ -286,7 +289,7 @@ SeqType welcome1() {
 
     eyes.showBlinkAnimation(mx);
     delay(250);    
-    mp3FastPlay(SOUND_WELCOME1);
+    mp3FastPlay(SOUND_R2D2_WELCOME1);
     delay(250);
 
     for (int i = 0; i< 10; i++) {
@@ -318,7 +321,7 @@ SeqType welcome2() {
     eyes.showBlinkAnimation(mx);
 
     delay(50);
-    mp3FastPlay(SOUND_WELCOME2);
+    mp3FastPlay(SOUND_R2D2_WELCOME2);
     delay(900);
 
     if (!isFlipSwitchOn())
@@ -420,6 +423,8 @@ SeqType welcome3() {
     if (!isFlipSwitchOn())
         return SEQ_TYPE_SHUTDOWN;
 
+    mp3FastPlay(SOUND_R2D2_WAKE_UP);
+    
     delay(1000);
 
     Eyes eyes;
@@ -437,6 +442,8 @@ SeqType welcome3() {
     eyes.show(mx);
 
     delay(1000);
+
+    mp3FastPlay(SOUND_R2D2_BROKEN);
 
     uint8_t profile[] = { 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 5, 4, 3, 2, 2, 2, 2, 3, 4, 5, 5, 5, 4, 3, 3, 3, 4, 4, 4, 4, 4 };
     for (int i=0; i<sizeof(profile) - 4; i++) {
@@ -522,7 +529,7 @@ SeqType bye2() {
 SeqType deception1() {
     Eyes eyes;
 
-    mp3FastPlay(SOUND_DECEPTION1);
+    mp3FastPlay(SOUND_R2D2_DECEPTION1);
 
     eyes.setExpression(EyeExpressionCry);
     eyes.show(mx);
@@ -655,7 +662,7 @@ SeqType deception2() {
 SeqType astonish1() {
     Eyes eyes;
 
-    mp3FastPlay(SOUND_ASTONISH1);
+    mp3FastPlay(SOUND_R2D2_ASTONISH1);
 
     eyes.setExpression(EyeExpressionHappy);
     eyes.show(mx);
@@ -693,7 +700,7 @@ SeqType astonish1() {
 SeqType astonish2() {
     Eyes eyes;
 
-    mp3FastPlay(SOUND_ASTONISH2);
+    mp3FastPlay(SOUND_R2D2_ASTONISH2);
 
     eyes.setExpression(EyeExpressionNeutral);
     eyes.show(mx);
@@ -734,7 +741,7 @@ SeqType astonish2() {
 SeqType angryWithThunders() {
     Eyes eyes;
 
-    mp3FastPlay(SOUND_ANGRY1);
+    mp3FastPlay(SOUND_R2D2_ANGRY1);
     
     eyes.setExpression(EyeExpressionAngry);
     eyes.show(mx);
@@ -815,6 +822,7 @@ SeqType deliriumWithBumb() {
 }
 
 SeqType deliriumShowingFablabAd() {
+    mp3FastPlay(SOUND_MARIO_END);
     showScrollingText("Y-FABLAB.CH", mx);
     delay(100);
     return SEQ_TYPE_SHUTDOWN;
