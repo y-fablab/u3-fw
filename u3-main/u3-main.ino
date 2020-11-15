@@ -22,7 +22,7 @@
 #define SERVO_PUNCH      150
 
 #define SOUND_ANGRY1      1
-#define SOUND_ANGRY2      2
+#define SOUND_ANGRY2      2 // pas utilisé
 #define SOUND_ASTONISH1   3
 #define SOUND_ASTONISH2   4
 #define SOUND_DECEPTION1  5
@@ -285,8 +285,9 @@ SeqType welcome1() {
     mp3Init(); // this takes 1250ms
 
     eyes.showBlinkAnimation(mx);
-
-    delay(500);
+    delay(250);    
+    mp3FastPlay(SOUND_WELCOME1);
+    delay(250);
 
     for (int i = 0; i< 10; i++) {
         delay(100);
@@ -316,7 +317,9 @@ SeqType welcome2() {
     eyes.showBlinkAnimation(mx);
     eyes.showBlinkAnimation(mx);
 
-    delay(1000);
+    delay(50);
+    mp3FastPlay(SOUND_WELCOME2);
+    delay(900);
 
     if (!isFlipSwitchOn())
         return SEQ_TYPE_DECEPTION;
@@ -519,6 +522,8 @@ SeqType bye2() {
 SeqType deception1() {
     Eyes eyes;
 
+    mp3FastPlay(SOUND_DECEPTION1);
+
     eyes.setExpression(EyeExpressionCry);
     eyes.show(mx);
     delay(800);
@@ -650,6 +655,8 @@ SeqType deception2() {
 SeqType astonish1() {
     Eyes eyes;
 
+    mp3FastPlay(SOUND_ASTONISH1);
+
     eyes.setExpression(EyeExpressionHappy);
     eyes.show(mx);
     delay(800);
@@ -685,6 +692,8 @@ SeqType astonish1() {
 
 SeqType astonish2() {
     Eyes eyes;
+
+    mp3FastPlay(SOUND_ASTONISH2);
 
     eyes.setExpression(EyeExpressionNeutral);
     eyes.show(mx);
@@ -725,6 +734,8 @@ SeqType astonish2() {
 SeqType angryWithThunders() {
     Eyes eyes;
 
+    mp3FastPlay(SOUND_ANGRY1);
+    
     eyes.setExpression(EyeExpressionAngry);
     eyes.show(mx);
     delay(800);
