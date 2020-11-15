@@ -834,11 +834,11 @@ SeqType deliriumShowingFablabAd() {
 Seq seqList[] = {
     { SEQ_TYPE_WELCOME, welcome1, 100 },
     { SEQ_TYPE_WELCOME, welcome2, 100 },
-    { SEQ_TYPE_WELCOME, welcome3, 100 },
+    { SEQ_TYPE_WELCOME, welcome3, 50 },
     { SEQ_TYPE_BYE, bye1, 100 },
     { SEQ_TYPE_BYE, bye2, 100 },
     { SEQ_TYPE_DECEPTION, deception1, 100 },
-    { SEQ_TYPE_DECEPTION, deception2, 100 },
+    { SEQ_TYPE_DECEPTION, deception2, 50 },
     { SEQ_TYPE_ASTONISH, astonish1, 100 },
     { SEQ_TYPE_ASTONISH, astonish2, 100 },
     { SEQ_TYPE_ANGRY, angryWithThunders, 100 },
