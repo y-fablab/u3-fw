@@ -19,7 +19,7 @@
 
 #define SERVO_HOME       15
 #define SERVO_OPEN_10MM  50
-#define SERVO_PUNCH      150
+#define SERVO_PUNCH      156
 
 #define SOUND_R2D2_ANGRY1      1
 #define SOUND_R2D2_ANGRY2      2 // pas utilisé
