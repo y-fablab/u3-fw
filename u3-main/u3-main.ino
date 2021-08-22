@@ -402,6 +402,9 @@ SeqType welcome3() {
 
     delay(1000);
 
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
     Eyes eyes;
 
     for (int i=0; i<=7; i++) {
@@ -413,11 +416,39 @@ SeqType welcome3() {
 
     delay(1000);
 
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
     eyes.setDirection(0); // toward up
     eyes.show(mx);
 
-    delay(1000);
+    punchSwitch();
 
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_ANGRY;
+
+    return SEQ_TYPE_BYE;
+}
+
+SeqType welcome4() {
+    Eyes eyes;
+
+    for (int i=0; i<=6; i++) {
+        eyes.setOpening(i);
+        eyes.show(mx);
+        delay(50);
+    }
+
+    delay(500);
+
+    eyes.setDirection(0); // toward up
+    eyes.show(mx);
+
+    mp3Init(); // this takes 1250ms
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+    
     mp3FastPlay(SOUND_R2D2_BROKEN);
 
     uint8_t profile[] = { 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 5, 4, 3, 2, 2, 2, 2, 3, 4, 5, 5, 5, 4, 3, 3, 3, 4, 4, 4, 4, 4 };
@@ -809,7 +840,8 @@ SeqType deliriumShowingFablabAd() {
 Seq seqList[] = {
     { SEQ_TYPE_WELCOME, welcome1, 100 },
     { SEQ_TYPE_WELCOME, welcome2, 100 },
-    { SEQ_TYPE_WELCOME, welcome3, 50 },
+    { SEQ_TYPE_WELCOME, welcome3, 100 },
+    { SEQ_TYPE_WELCOME, welcome4, 100 },
     { SEQ_TYPE_BYE, bye1, 100 },
     { SEQ_TYPE_BYE, bye2, 100 },
     { SEQ_TYPE_DECEPTION, deception1, 100 },
