@@ -38,12 +38,13 @@
 
 enum SeqType {
     SEQ_TYPE_SHUTDOWN,
-    SEQ_TYPE_WELCOME,   // lors de l'enclanchement
-    SEQ_TYPE_BYE,       // lorsque le punch réussit
-    SEQ_TYPE_DECEPTION, // lorsqu'on éteint avant le punch
-    SEQ_TYPE_ASTONISH,  // lorsqu'on réallume après un DECEPTION
-    SEQ_TYPE_ANGRY,     // lorsqu'on empêche le punch de switcher off
-    SEQ_TYPE_DELIRIUM,  // lorsqu'on est en ANGRY et qu'on éteint la boîte
+    SEQ_TYPE_WELCOME,     // lors de l'enclanchement
+    SEQ_TYPE_BYE,         // lorsque le punch réussit
+    SEQ_TYPE_DECEPTION,   // lorsqu'on éteint avant le punch
+    SEQ_TYPE_ASTONISH,    // lorsqu'on réallume après un DECEPTION
+    SEQ_TYPE_ANGRY,       // lorsqu'on empêche le punch de switcher off
+    SEQ_TYPE_DELIRIUM,    // lorsqu'on est en ANGRY et qu'on éteint la boîte
+    SEQ_TYPE_SPEED_FIGHT, // lorsqu'on allume la boîte alors qu'elle est en train de s'éteindre
     SEQ_TYPE_MAX
 };
 
@@ -162,11 +163,23 @@ void waitFlipSwitchOff(int timeout) {
     }
 }
 
-void punchSwitch() {
+void waitFlipSwitchOn(int timeout) {
+    unsigned long startTime = millis();
+    for (;;) {
+        if (millis() - startTime >= timeout)
+            break;
+        if (isFlipSwitchOn())
+            break;
+    }
+}
+
+bool punchSwitch() {
     servo.write(SERVO_PUNCH);
     waitFlipSwitchOff(700);
+    bool success = !isFlipSwitchOn();
     servo.write(SERVO_HOME);
     delay(700);
+    return success;
 }
 
 /**
@@ -535,11 +548,15 @@ SeqType bye1() {
     eyes.setDirection(-1);
     eyes.show(mx);
 
-    delay(500);
+    waitFlipSwitchOn(500);
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_SPEED_FIGHT;
 
     eyes.showBlinkAnimation(mx, false, true);
 
-    delay(1000);
+    waitFlipSwitchOn(1000);
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_SPEED_FIGHT;
 
     for (int i=6; i>=0; i--) {
         eyes.setOpening(i);
@@ -559,12 +576,16 @@ SeqType bye2() {
     eyes.setDirection(-1);
     eyes.show(mx);
 
-    delay(500);
+    waitFlipSwitchOn(500);
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_SPEED_FIGHT;
 
     eyes.showBlinkAnimation(mx);
     eyes.showBlinkAnimation(mx);
 
-    delay(200);
+    waitFlipSwitchOn(200);
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_SPEED_FIGHT;
 
     for (int i=0; i<=8; i++) {
         eyes.left.setDirection(i % 8);
@@ -575,7 +596,9 @@ SeqType bye2() {
     eyes.setDirection(-1);
     eyes.show(mx);
 
-    delay(1000);
+    waitFlipSwitchOn(1000);
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_SPEED_FIGHT;
 
     for (int i=6; i>=0; i--) {
         eyes.setOpening(i);
@@ -890,6 +913,58 @@ SeqType deliriumShowingFablabAd() {
     return SEQ_TYPE_SHUTDOWN;
 }
 
+SeqType speedFight() {
+    BitFrame<5, 6> up({
+        0b00100000,
+        0b01110000,
+        0b11111000,
+        0b00100000,
+        0b00100000,
+        0b00100000,
+    });
+    BitFrame<5, 6> down({
+        0b00100000,
+        0b00100000,
+        0b00100000,
+        0b11111000,
+        0b01110000,
+        0b00100000,
+    });
+
+    BitFrame<16, 8> screen;
+
+punch:
+    screen.clear();
+    screen.paint(2, 1, down);
+    screen.paint(9, 1, down);
+    mx.show(screen);
+
+    servo.write(SERVO_PUNCH);
+    waitFlipSwitchOff(700);
+    bool state = isFlipSwitchOn();
+    servo.write(SERVO_HOME);
+
+    if (state) {
+        delay(700);          
+        goto punch;
+    }
+
+    screen.clear();
+    screen.paint(2, 1, up);
+    screen.paint(9, 1, up);
+    mx.show(screen);
+
+    for (int i=0; i<10; i++) {
+        if (isFlipSwitchOn())
+            goto punch;          
+        delay(100);
+    }
+
+    screen.clear();
+    mx.show(screen);
+
+    return SEQ_TYPE_SHUTDOWN;
+}
 
 /*** sequence list ***/
 
@@ -908,6 +983,7 @@ Seq seqList[] = {
     { SEQ_TYPE_ANGRY, angryWithThunders, 100 },
     { SEQ_TYPE_DELIRIUM, deliriumWithBumb, 100 },
     { SEQ_TYPE_DELIRIUM, deliriumShowingFablabAd, 10 },
+    { SEQ_TYPE_SPEED_FIGHT, speedFight, 100 },
 };
 
 int seqCount = sizeof(seqList) / sizeof(*seqList);
