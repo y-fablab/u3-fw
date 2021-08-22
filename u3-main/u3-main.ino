@@ -319,37 +319,44 @@ SeqType welcome2() {
 
     mp3FastPlay(SOUND_R2D2_WELCOME2);
     eyes.showBlinkAnimation(mx);
-    eyes.showBlinkAnimation(mx);
+    delay(500);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
+    // look ar right
+    
+    eyes.setDirection(2);
+    eyes.show(mx);
     delay(1000);
 
     if (!isFlipSwitchOn())
         return SEQ_TYPE_DECEPTION;
 
-    eyes.setDirection(2); // toward right
-    eyes.show(mx);
-    delay(1000);
+    // look at left
+    
     for (int i=0; i<=4; i++) {
         eyes.setDirection((10 - i) % 8);
         eyes.show(mx);
         delay(100);
     }
     delay(200);
+
+    // blink eyes
+    
     eyes.showBlinkAnimation(mx);
     delay(500);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
+    // look at right
+    
     for (int i=0; i<=4; i++) {
         eyes.setDirection((6 + i) % 8);
         eyes.show(mx);
         delay(100);
     }
-    delay(1000);
-    for (int i=0; i<=3; i++) {
-        if (i == 1)
-          eyes.left.setDirection(1);
-        eyes.right.setDirection((10 - i) % 8);
-        eyes.show(mx);
-        delay(100);
-    }
-    delay(1000);
 
     if (!isFlipSwitchOn())
         return SEQ_TYPE_DECEPTION;
