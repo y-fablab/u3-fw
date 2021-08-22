@@ -611,6 +611,41 @@ SeqType bye2() {
     return SEQ_TYPE_SHUTDOWN;
 }
 
+SeqType bye3() {
+    Eyes eyes;
+
+    eyes.setExpression(EyeExpressionNeutral);
+    eyes.setDirection(-1);
+    eyes.show(mx);
+
+    ByteFrame<16, 8> f;
+
+    for (int t = 0; t < 110; t++) {
+        int value_max = 255 - t * 255 / 40;
+        for (int y = 0; y < 8; y++) {
+            int value = value_max + y * 255 / 4;
+            if (value < 0)
+                value = 0;
+            if (value > 255)
+                value = 255;
+            for (int x = 0; x < 16; x++) {
+                if (eyes.getBit(x, y))
+                    f.setByte(x, y, value);
+                else
+                    f.setByte(x, y, 0);
+            }
+        }
+        auto mask = f.sparkledBitFrame();
+        mx.show(mask);
+        delay(25);
+
+        if (isFlipSwitchOn())
+            return SEQ_TYPE_SPEED_FIGHT;
+    }
+
+    return SEQ_TYPE_SHUTDOWN;
+}
+
 SeqType deception1() {
     Eyes eyes;
 
@@ -976,6 +1011,7 @@ Seq seqList[] = {
     { SEQ_TYPE_WELCOME, welcome5, 100 },
     { SEQ_TYPE_BYE, bye1, 100 },
     { SEQ_TYPE_BYE, bye2, 100 },
+    { SEQ_TYPE_BYE, bye3, 50 },
     { SEQ_TYPE_DECEPTION, deception1, 100 },
     { SEQ_TYPE_DECEPTION, deception2, 50 },
     { SEQ_TYPE_ASTONISH, astonish1, 100 },
