@@ -338,7 +338,7 @@ SeqType welcome2() {
         return SEQ_TYPE_DECEPTION;
 
     // look ar right
-    
+
     eyes.setDirection(2);
     eyes.show(mx);
     delay(1000);
@@ -347,7 +347,7 @@ SeqType welcome2() {
         return SEQ_TYPE_DECEPTION;
 
     // look at left
-    
+
     for (int i=0; i<=4; i++) {
         eyes.setDirection((10 - i) % 8);
         eyes.show(mx);
@@ -356,7 +356,7 @@ SeqType welcome2() {
     delay(200);
 
     // blink eyes
-    
+
     eyes.showBlinkAnimation(mx);
     delay(500);
 
@@ -364,7 +364,7 @@ SeqType welcome2() {
         return SEQ_TYPE_DECEPTION;
 
     // look at right
-    
+
     for (int i=0; i<=4; i++) {
         eyes.setDirection((6 + i) % 8);
         eyes.show(mx);
@@ -468,7 +468,7 @@ SeqType welcome4() {
 
     if (!isFlipSwitchOn())
         return SEQ_TYPE_DECEPTION;
-    
+
     mp3FastPlay(SOUND_R2D2_BROKEN);
 
     uint8_t profile[] = { 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 5, 4, 3, 2, 2, 2, 2, 3, 4, 5, 5, 5, 4, 3, 3, 3, 4, 4, 4, 4, 4 };
@@ -512,7 +512,7 @@ SeqType welcome5() {
 
     mp3FastPlay(SOUND_R2D2_ASTONISH1);
     delay(500);
-    
+
     showHearts(false, mx);
     delay(200);
     showHearts(true, mx);
@@ -945,7 +945,7 @@ punch:
     servo.write(SERVO_HOME);
 
     if (state) {
-        delay(700);          
+        delay(700);
         goto punch;
     }
 
@@ -956,7 +956,7 @@ punch:
 
     for (int i=0; i<10; i++) {
         if (isFlipSwitchOn())
-            goto punch;          
+            goto punch;
         delay(100);
     }
 
