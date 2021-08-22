@@ -878,7 +878,7 @@ SeqType angryWithThunders() {
     mx.setIntensity(normalIntentity);
     delay(100);
     eyes.show(mx);
-    delay(2000);
+    delay(500);
     if (isFlipSwitchOn()) {
         punchSwitch();
         delay(100);
