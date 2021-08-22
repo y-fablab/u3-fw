@@ -479,6 +479,55 @@ SeqType welcome4() {
     return SEQ_TYPE_BYE;
 }
 
+SeqType welcome5() {
+    Eyes eyes;
+
+    for (int i=0; i<=6; i++) {
+        eyes.setOpening(i);
+        eyes.show(mx);
+        delay(50);
+    }
+
+    mp3Init(); // this takes 1250ms
+
+    eyes.showBlinkAnimation(mx);
+    eyes.showBlinkAnimation(mx);
+    delay(500);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
+    mp3FastPlay(SOUND_R2D2_ASTONISH1);
+    delay(500);
+    
+    showHearts(false, mx);
+    delay(200);
+    showHearts(true, mx);
+    delay(200);
+    showHearts(false, mx);
+    delay(200);
+    showHearts(true, mx);
+    delay(200);
+    showHearts(false, mx);
+    delay(200);
+    eyes.show(mx);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
+    delay(1000);
+
+    if (!isFlipSwitchOn())
+        return SEQ_TYPE_DECEPTION;
+
+    punchSwitch();
+
+    if (isFlipSwitchOn())
+        return SEQ_TYPE_ANGRY;
+
+    return SEQ_TYPE_BYE;
+}
+
 SeqType bye1() {
     Eyes eyes;
 
@@ -849,6 +898,7 @@ Seq seqList[] = {
     { SEQ_TYPE_WELCOME, welcome2, 100 },
     { SEQ_TYPE_WELCOME, welcome3, 100 },
     { SEQ_TYPE_WELCOME, welcome4, 100 },
+    { SEQ_TYPE_WELCOME, welcome5, 100 },
     { SEQ_TYPE_BYE, bye1, 100 },
     { SEQ_TYPE_BYE, bye2, 100 },
     { SEQ_TYPE_DECEPTION, deception1, 100 },
