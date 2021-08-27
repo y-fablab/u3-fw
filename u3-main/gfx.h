@@ -7,6 +7,7 @@
 //
 
 #pragma once
+#include <string>
 #include "Arduino.h"
 #include "mx.h"
 
