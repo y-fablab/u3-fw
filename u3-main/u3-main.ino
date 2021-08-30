@@ -251,7 +251,10 @@ void setup() {
     mx.init();
 
     servo.write(SERVO_HOME);
-    servo.attach(GPIO_SERVO);
+
+    // define same min/max as in ESP8266 Arduino core 2.7.4
+    servo.attach(GPIO_SERVO, 544, 2400);
+
     servo.write(SERVO_HOME);
     delay(10); // does it help to avoid movement glitch?
 
