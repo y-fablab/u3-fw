@@ -164,9 +164,9 @@ public:
         data[x + width * y] = value;
     }
 
-    BitFrame<width, height> &sparkledBitFrame() {
+    BitFrame<width, height> sparkledBitFrame() {
         BitFrame<width, height> ret;
-        for (int y = 0; y < width; y++) {
+        for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 bool value = random(255) < getByte(x, y);
                 ret.setBit(x, y, value);

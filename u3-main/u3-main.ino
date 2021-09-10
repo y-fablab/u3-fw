@@ -638,7 +638,7 @@ SeqType bye3() {
                     f.setByte(x, y, 0);
             }
         }
-        auto mask = f.sparkledBitFrame();
+        BitFrame<16, 8> mask = f.sparkledBitFrame();
         mx.show(mask);
         delay(25);
 
